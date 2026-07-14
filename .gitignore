@@ -1,0 +1,55 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Backend
+/vendor/
+/storage/*.key
+/storage/pail/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/storage/logs/
+/bootstrap/cache/
+/public/build/
+/public/hot/
+/public/storage/
+/.phpunit.result.cache
+/.phpunit.cache
+/.phpactor.json
+/.codex/
+/.cursor/
+/.nova/
+/.zed/
+/auth.json
+Homestead.json
+Homestead.yaml
+composer.lock
+
+# Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
+
+# Project data
+personal-tracker.sqlite
