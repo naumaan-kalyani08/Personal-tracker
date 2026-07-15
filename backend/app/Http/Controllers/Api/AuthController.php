@@ -62,11 +62,11 @@ class AuthController extends Controller
                 'message'=>'Invalid password'
             ],401);
         }
-        // $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'status'=>true,
             'message'=>'User Logged in successfully',
-            // 'access_token'=>$token,
+            'access_token'=>$token,
             'user'=>$user
         ],200); 
     }
