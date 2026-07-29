@@ -1,20 +1,42 @@
-import React from 'react'
+﻿import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-const AppRoutes = () => {
-  return (    
+import PublicLayout from '../Layouts/PublicLayout'
+import AppLayout from '../Layouts/Applayout'
+import ProtectedRoutes from './ProtectedRoutes'
+import Index from '../Pages/Index'
+import LoginPage from '../Pages/LoginPage'
+import RegistrationPage from '../Pages/RegistrationPage'
+import PageNotFound from '../Pages/PageNotFound'
+import DashboardPage from '../Pages/DashboardPage'
+import ProfilePage from '../Pages/ProfilePage'
+
+const AppRouter = () => {
+  return (
     <Routes>
-      {/* Public Routes */}
-      <Route>
-        <Route path="/" element={<div>Home</div>} />
+      {/* Public pages without a shell */}
+      <Route element={<PublicLayout />}>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegistrationPage />} />
       </Route>
 
-      {/* Authenticated routes */}
-      <Route element={<div>Authenticated Routes</div>}>
-        <Route path="/dashboard" element={<div>Dashboard</div>} />
+      {/* Public pages with header/footer/sidebar */}
+      <Route element={<AppLayout />}>
+        <Route path='/' element={<Index />} />
+        <Route path='/about' element={<div>About Page</div>} />
+        <Route path='/contact' element={<div>Contact Page</div>} />
       </Route>
-      <Route path="*" element={<div>404 Not Found</div>} />
+
+      {/* Protected pages with header/footer/sidebar */}
+      <Route element={<ProtectedRoutes />}>
+        <Route element={<AppLayout />}>
+          <Route path='/dashboard' element={<DashboardPage />} />
+          <Route path='/profile' element={<ProfilePage />} />
+        </Route>
+      </Route>
+
+      <Route path='*' element={<PageNotFound />} />
     </Routes>
   )
 }
 
-export default AppRoutes
+export default AppRouter
