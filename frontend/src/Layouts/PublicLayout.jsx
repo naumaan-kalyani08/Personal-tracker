@@ -1,8 +1,11 @@
-import React from 'react'
+﻿import React from 'react'
+import { Outlet } from 'react-router-dom'
 
 const PublicLayout = () => {
   return (
-    <div>PublicLayout</div>
+    <div>
+      <Outlet />
+    </div>
   )
 }
 
