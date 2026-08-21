@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "backend"
+    },
+    {
+      "path": "frontend"
+    }
+  ],
+  "settings": {
+    "php.validate.enable": true,
+    "php.validate.executablePath": "C:\\php\\php.exe",
+    "php.executablePath": "C:\\php\\php.exe",
+    "php.debug.executablePath": "C:\\php\\php.exe",
+    "intelephense.environment.phpVersion": "8.5.0",
+    "intelephense.files.exclude": {
+      "**/vendor/**": true
+    },
+    "files.associations": {
+      "*.php": "php"
+    }
+  }
+}
