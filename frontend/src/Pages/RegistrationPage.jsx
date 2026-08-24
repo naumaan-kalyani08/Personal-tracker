@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { getApiData, postApiData, useApiForm } from '../Api/ReusableApiLogics'
 import { ReusableButton, ReusableInput, showSequentialMessage } from '../Components/UI/ReusableComponents'
+import { useNavigate } from 'react-router'
 
 const InitialFormData ={
     first_name:'',
@@ -11,20 +12,21 @@ const InitialFormData ={
   }
 
 const RegistrationPage = () => {
+  const navigate = useNavigate()
   
   useEffect(() => {
     // getApiData('https://api.example.com/data', { param1: 'value1', param2: 'value2' })
     getApiData('test')  // Calling the 'users' endpoint
   }, [])
   const {formData,handleInputChange,handleSubmit,loading,responseMessage} = useApiForm('register',InitialFormData)
-  const submitRegistration = () => {
-    showSequentialMessage([
-      { type: 'info', content: 'Preparing your registration...' },
-      { type: 'loading', content: 'Validating your details...' },
-      { type: 'success', content: 'Registration submitted successfully!' },
-    ])
+  const disableRegisterButton = formData.password.length < 8
+  const submitRegistration = async (e) => {
+    disableRegisterButton? showSequentialMessage('Password must be at least 8 characters long') : null
+    const result = await handleSubmit(e)
 
-    console.log('Registration submitted')
+    if (result?.status) {
+      navigate('/login')
+    }
   }
  
 
@@ -35,7 +37,7 @@ const RegistrationPage = () => {
         <ReusableInput label="Last Name" name="last_name" value={formData.last_name} onChange={handleInputChange} size="medium" placeholder="Enter your name" />
         <ReusableInput label="Email" name="email" value={formData.email} onChange={handleInputChange} size="medium" placeholder="Enter your email" type="email" />
         <ReusableInput label="Password" name="password" value={formData.password} onChange={handleInputChange} size="medium" placeholder="Enter your password" type="password" />
-        <ReusableButton label="Register" onClick={handleSubmit} />
+        <ReusableButton label="Register" onClick={submitRegistration} loading={loading} disabled={disableRegisterButton} />
       </div>
           {responseMessage && <p>{responseMessage}</p>}
     </div>

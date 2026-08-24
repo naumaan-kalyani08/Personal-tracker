@@ -1,16 +1,28 @@
 ﻿import React from 'react'
-import { Link, Outlet } from 'react-router'
-
+import { Link, Outlet,useNavigate } from 'react-router'
+  
 const Applayout = () => {
+  const navigate = useNavigate()
+  const LogoutUser =()=>{
+    localStorage.removeItem('access_token')
+    navigate('/login')
+  }
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header style={{ padding: '16px', background: '#111827', color: '#fff' }}>
-        <nav style={{ display: 'flex', gap: '16px' }}>
-          <Link to='/' style={{ color: '#fff' }}>Home</Link>
-          <Link to='/about' style={{ color: '#fff' }}>About</Link>
-          <Link to='/contact' style={{ color: '#fff' }}>Contact</Link>
-          <Link to='/dashboard' style={{ color: '#fff' }}>Dashboard</Link>
-        </nav>
+        <div className="flex justify-between items-center">
+
+          <nav style={{ display: 'flex', gap: '16px' }}>
+            <Link to='/' style={{ color: '#fff' }}>Home</Link>
+            <Link to='/about' style={{ color: '#fff' }}>About</Link>
+            <Link to='/contact' style={{ color: '#fff' }}>Contact</Link>
+            <Link to='/dashboard' style={{ color: '#fff' }}>Dashboard</Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <div className="avatar bg-red-100 rounded-full p-1 w-10 h-10"></div>
+            <div className="" onClick={LogoutUser}> Logout</div>
+          </div>
+        </div>
       </header>
 
       <div style={{ display: 'flex', flex: 1 }}>

@@ -27,6 +27,12 @@ const LoginPage = () => {
         <ReusableInput label="Email" name="email" value={formData.email} onChange={handleInputChange} placeholder="" />
         <ReusableInput label="Password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="" />
         <ReusableButton label="Login" onClick={handleLoginSubmit} loading={loading} />
+        <div className="mt-4 text-center">
+          <span>Don't have an account? </span>
+          <button className="text-blue-500 hover:underline" onClick={() => navigate('/register')}>
+            Register
+          </button>
+        </div>
         {responseMessage && <p className="mt-3 text-sm text-red-500">{responseMessage}</p>}
       </div>
     </div>
