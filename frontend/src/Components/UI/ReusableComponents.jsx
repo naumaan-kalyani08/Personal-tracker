@@ -12,12 +12,14 @@ import {
   Pagination,
   Table,
   message,
+  Dropdown
 } from 'antd';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export const ReusableInput = (props) => {
+  
   return (
     <div className="input-wrapper mb-2">
       <label className="mb-1.5 inline-block" htmlFor={props.labelFor}>{props.label}</label>
@@ -77,25 +79,13 @@ export const ReusableModal = (props) => {
   );
 };
 
-export const ReusableDropdown = (props) => {
-  return (
-    <Select
-      placeholder={props.placeholder}
-      value={props.value}
-      onChange={props.onChange}
-      style={props.style || { width: 200 }}
-      {...props}
-    >
-      {props.options
-        ? props.options.map((opt) => (
-            <Option key={opt.value} value={opt.value}>
-              {opt.label}
-            </Option>
-          ))
-        : props.children}
-    </Select>
-  );
-};
+export const ReusableDropdown =(props)=>{
+  return(
+    <Dropdown overlay={props.dropdownMenu} placement={props.placement || 'bottomLeft'} trigger={props.trigger || ['click']}>
+      {props.children}
+    </Dropdown>
+  )
+}   
 
 export const ReusableCheckbox = (props) => {
   return (
