@@ -1,6 +1,6 @@
 ﻿import React from 'react'
 import { Link, Outlet,useNavigate } from 'react-router'
-  
+import { EllipsisVerticalIcon } from "@animateicons/react/lucide";
 const Applayout = () => {
   const navigate = useNavigate()
   const LogoutUser =()=>{
@@ -20,7 +20,11 @@ const Applayout = () => {
           </nav>
           <div className="flex items-center gap-4">
             <div className="avatar bg-red-100 rounded-full p-1 w-10 h-10"></div>
-            <div className="" onClick={LogoutUser}> Logout</div>
+            <div className="" onClick={LogoutUser}> <EllipsisVerticalIcon
+  size={20}
+  duration={0.75}
+  color="#ffffff"
+/></div>
           </div>
         </div>
       </header>
