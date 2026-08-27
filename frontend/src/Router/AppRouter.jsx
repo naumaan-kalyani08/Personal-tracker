@@ -9,6 +9,7 @@ import RegistrationPage from '../Pages/RegistrationPage'
 import PageNotFound from '../Pages/PageNotFound'
 import DashboardPage from '../Pages/DashboardPage'
 import ProfilePage from '../Pages/ProfilePage'
+import AccountSettings from '../Pages/AccountSettings'
 
 const AppRouter = () => {
   return (
@@ -31,6 +32,7 @@ const AppRouter = () => {
         <Route element={<AppLayout />}>
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/profile' element={<ProfilePage />} />
+          <Route path ='/account-settings' element={<AccountSettings />} />
         </Route>
       </Route>
 
