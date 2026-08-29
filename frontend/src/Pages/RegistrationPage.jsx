@@ -19,9 +19,7 @@ const RegistrationPage = () => {
     getApiData('test')  // Calling the 'users' endpoint
   }, [])
   const {formData,handleInputChange,handleSubmit,loading,responseMessage} = useApiForm('register',InitialFormData)
-  const disableRegisterButton = formData.password.length < 8
   const submitRegistration = async (e) => {
-    disableRegisterButton? showSequentialMessage('Password must be at least 8 characters long') : null
     const result = await handleSubmit(e)
 
     if (result?.status) {
@@ -37,7 +35,7 @@ const RegistrationPage = () => {
         <ReusableInput label="Last Name" name="last_name" value={formData.last_name} onChange={handleInputChange} size="medium" placeholder="Enter your name" />
         <ReusableInput label="Email" name="email" value={formData.email} onChange={handleInputChange} size="medium" placeholder="Enter your email" type="email" />
         <ReusableInput label="Password" name="password" value={formData.password} onChange={handleInputChange} size="medium" placeholder="Enter your password" type="password" />
-        <ReusableButton label="Register" onClick={submitRegistration} loading={loading} disabled={disableRegisterButton} />
+        <ReusableButton label="Register" onClick={submitRegistration} loading={loading} />
       </div>
           {responseMessage && <p>{responseMessage}</p>}
     </div>
