@@ -2,7 +2,12 @@
 import { Navigate, Outlet } from 'react-router'
 
 const isAuthenticated = () => {
-  return Boolean(localStorage.getItem('access_token'))
+  try {
+    const auth = JSON.parse(localStorage.getItem('auth') || '{}')
+    return Boolean(auth?.access_token)
+  } catch {
+    return false
+  }
 }
 
 const ProtectedRoutes = () => {
