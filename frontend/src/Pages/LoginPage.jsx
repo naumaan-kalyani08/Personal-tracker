@@ -15,8 +15,17 @@ const LoginPage = () => {
     const result = await handleSubmit(e)
     
     if (result && result.access_token) {
-      localStorage.setItem('access_token',result.access_token)
-      console.log('Login result:', result.access_token)
+      const auth = {
+        access_token: result.access_token,
+        user: {
+          first_name: result.user.first_name,
+          last_name: result.user.last_name,
+          email: result.user.email,
+          number: result.user.number,
+        },
+      }
+
+      localStorage.setItem('auth', JSON.stringify(auth))
       navigate('/dashboard')
     }
   }
