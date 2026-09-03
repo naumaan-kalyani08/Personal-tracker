@@ -79,13 +79,37 @@ export const ReusableModal = (props) => {
   );
 };
 
-export const ReusableDropdown =(props)=>{
-  return(
-    <Dropdown overlay={props.dropdownMenu} placement={props.placement || 'bottomLeft'} trigger={props.trigger || ['click']}>
-      {props.children}
+export const ReusableDropdown = ({
+  items = [],
+  children,
+  placement = 'bottomLeft',
+  trigger = ['click'],
+  menuProps = {},
+  ...props
+}) => {
+  const menu = {
+    ...menuProps,
+    items: items.map((item) => ({
+      key: item.key || item.label,
+      label: item.label,
+      danger: item.danger,
+      icon: item.icon,
+      onClick: item.onClick,
+      disabled: item.disabled,
+    })),
+  };
+
+  return (
+    <Dropdown
+      menu={menu}
+      placement={placement}
+      trigger={trigger}
+      {...props}
+    >
+      {children}
     </Dropdown>
-  )
-}   
+  );
+};
 
 export const ReusableCheckbox = (props) => {
   return (
