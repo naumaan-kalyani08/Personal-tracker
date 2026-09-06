@@ -1,5 +1,5 @@
 ﻿
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Pencil,
   Mail,
@@ -9,19 +9,23 @@ import {
   Save,
   X,
 } from "@animateicons/react/lucide";
+import { getApiData } from '../Api/ReusableApiLogics'
+
+const emptyProfile = {
+  first_name: '',
+  last_name: '',
+  email: '',
+  number: '',
+  dob: '',
+}
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [profileInfo, setProfileInfo] = useState(emptyProfile);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [profile, setProfile] = useState({
-    first_name: "John",
-    last_name: "Doe",
-    email: "john@example.com",
-    number: "9876543210",
-    dob: "2000-05-15",
-  });
-
-  const [formData, setFormData] = useState(profile);
+  const [formData, setFormData] = useState(emptyProfile);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,12 +37,12 @@ const ProfilePage = () => {
   };
 
   const handleEdit = () => {
-    setFormData(profile);
+    setFormData(profileInfo);
     setIsEditing(true);
   };
 
   const handleCancel = () => {
-    setFormData(profile);
+    setFormData(profileInfo);
     setIsEditing(false);
   };
 
@@ -48,9 +52,35 @@ const ProfilePage = () => {
     // Later connect this to Laravel:
     // PUT /api/profile
 
-    setProfile(formData);
+    setProfileInfo(formData);
     setIsEditing(false);
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const result = await getApiData('user');
+        const user = result.user || emptyProfile;
+
+        setProfileInfo(user);
+        setFormData(user);
+      } catch (requestError) {
+        setError(requestError.message || 'Unable to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return <div className="p-6 text-sm text-gray-500">Loading profile...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-sm text-red-600">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10 sm:px-6 lg:px-8">
@@ -78,17 +108,17 @@ const ProfilePage = () => {
               <div className="flex items-center gap-4">
 
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-red-100 text-2xl font-semibold text-red-600">
-                  {profile.first_name?.charAt(0)}
-                  {profile.last_name?.charAt(0)}
+                  {profileInfo.first_name?.charAt(0)}
+                  {profileInfo.last_name?.charAt(0)}
                 </div>
 
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">
-                    {profile.first_name} {profile.last_name}
+                    {profileInfo.first_name} {profileInfo.last_name}
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    {profile.email}
+                    {profileInfo.email}
                   </p>
                 </div>
 
@@ -154,7 +184,7 @@ const ProfilePage = () => {
                       <User size={17} className="text-gray-400" />
 
                       <span className="text-sm text-gray-800">
-                        {profile.first_name}
+                        {profileInfo.first_name}
                       </span>
                     </div>
                   )}
@@ -179,7 +209,7 @@ const ProfilePage = () => {
                       <User size={17} className="text-gray-400" />
 
                       <span className="text-sm text-gray-800">
-                        {profile.last_name}
+                        {profileInfo.last_name}
                       </span>
                     </div>
                   )}
@@ -204,7 +234,7 @@ const ProfilePage = () => {
                       <Mail size={17} className="text-gray-400" />
 
                       <span className="text-sm text-gray-800">
-                        {profile.email}
+                        {profileInfo.email}
                       </span>
                     </div>
                   )}
@@ -229,7 +259,7 @@ const ProfilePage = () => {
                       <Phone size={17} className="text-gray-400" />
 
                       <span className="text-sm text-gray-800">
-                        {profile.number}
+                        {profileInfo.number}
                       </span>
                     </div>
                   )}
@@ -254,7 +284,7 @@ const ProfilePage = () => {
                       <Calendar size={17} className="text-gray-400" />
 
                       <span className="text-sm text-gray-800">
-                        {profile.dob}
+                        {profileInfo.dob}
                       </span>
                     </div>
                   )}
