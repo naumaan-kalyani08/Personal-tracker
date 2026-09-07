@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -75,5 +76,42 @@ class AuthController extends Controller
             'status'=>true,
             'user'=>$request->user()
         ],200);
+    }
+    public function logout( request $request){
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'User logged out successfully'
+        ],200);
+    }
+    public function updateProfile(request $request){
+        $user = $request->user();
+        Log::info(['user 90' => $user]);
+        return [
+            'status' => true,
+            'message' => 'User details retrieved successfully',
+            'data' => $user
+        ];
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'number' => 'string|max:12',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $user->update($request->only(['first_name', 'last_name', 'number']));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile updated successfully',
+            'data' => $user
+        ], 200);
     }
 }
