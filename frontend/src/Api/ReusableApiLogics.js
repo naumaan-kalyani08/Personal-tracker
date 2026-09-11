@@ -1,6 +1,18 @@
 import { useState } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api/";
+
+const getApiHeaders = () => {
+  const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+
+  return {
+    Accept: 'application/json',
+    ...(auth.access_token
+      ? { Authorization: `Bearer ${auth.access_token}` }
+      : {}),
+  };
+};
+
 export const getApiData = async (endpoint='', params ={}) => {
  try {
     // const param = params || ''; 
@@ -8,7 +20,9 @@ export const getApiData = async (endpoint='', params ={}) => {
     const url = queryString ? `${API_BASE_URL}${endpoint}?${queryString}`:`${API_BASE_URL}${endpoint}`;
     // const url =`${API_BASE_URL}${endpoint}?${new URLSearchParams(param).toString()}`;       
     console.log('Fetching data from:', url, 'with params:', params);
-    const response =await fetch(url)
+    const response =await fetch(url, {
+      headers: getApiHeaders(),
+    })
     if (!response.ok) {
       throw new Error(`Http error: ${response.status}`);      
     }
@@ -25,7 +39,8 @@ export const postApiData = async (endpoint, data) => {
     const response = await fetch(url,{
     method: 'POST',
     headers:{
-      "content-type": "application/json"
+      "content-type": "application/json",
+      ...getApiHeaders(),
     },
     body: JSON.stringify(data)
   });
