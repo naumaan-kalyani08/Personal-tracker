@@ -52,6 +52,24 @@ export const postApiData = async (endpoint, data) => {
     throw error;
   }
 }
+export const deleteApiData = async (endpoint) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  try{
+    const response = await fetch(url,{
+    method: 'DELETE',
+    headers:{
+      "content-type": "application/json",
+      ...getApiHeaders(),
+    }
+  });
+  const result = await response.json();
+  return result;
+  }
+  catch(error){
+    console.error("DELETE API Error:", error);
+    throw error;
+  }
+}
 export const useApiForm =(endpoint,initialFormData={})=>{
   const [formData, setFormData] = useState(()=>({...initialFormData}))
   const [loading, setloading] = useState(false)
@@ -99,3 +117,10 @@ export const useApiForm =(endpoint,initialFormData={})=>{
     resetFormData
   }
 } 
+
+export const useDeleteApiData = (endpoint) => {
+  const [loading, setLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
+ 
+  
+}
