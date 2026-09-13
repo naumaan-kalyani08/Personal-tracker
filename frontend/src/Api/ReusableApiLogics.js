@@ -118,9 +118,111 @@ export const useApiForm =(endpoint,initialFormData={})=>{
   }
 } 
 
+export const putApiData = async (endpoint, data) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  try{
+    const response = await fetch(url,{
+    method: 'PUT',
+    headers:{
+      "content-type": "application/json",
+      ...getApiHeaders(),
+    },
+    body: JSON.stringify(data)
+  });
+  const result = await response.json();
+  return result;
+  }
+  catch(error){
+    console.error("PUT API Error:", error);
+    throw error;
+  }
+}
+
+export const patchApiData = async (endpoint, data) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  try{
+    const response = await fetch(url,{
+    method: 'PATCH',
+    headers:{
+      "content-type": "application/json",
+      ...getApiHeaders(),
+    },
+    body: JSON.stringify(data)
+  });
+  const result = await response.json();
+  return result;
+  }
+  catch(error){
+    console.error("PATCH API Error:", error);
+    throw error;
+  }
+}
+
 export const useDeleteApiData = (endpoint) => {
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
- 
   
+  const handleDelete = async () => {
+    setLoading(true);
+    setResponseMessage('');
+    try {
+      const result = await deleteApiData(endpoint);
+      if(result.status){
+        setResponseMessage(result.message || 'Deleted successfully');
+      } else {
+        setResponseMessage(result.message || 'Failed to delete');
+      }
+      return result;
+    } catch(error) {
+      setResponseMessage(error.message || 'Something went wrong');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  return {
+    handleDelete,
+    loading,
+    responseMessage
+  }
+}
+
+export const useApiCall = (method = 'GET') => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  
+  const execute = async (endpoint, payload = null, params = null) => {
+    setLoading(true);
+    setError(null);
+    try {
+      let result;
+      if (method === 'GET') {
+        result = await getApiData(endpoint, params);
+      } else if (method === 'POST') {
+        result = await postApiData(endpoint, payload);
+      } else if (method === 'PUT') {
+        result = await putApiData(endpoint, payload);
+      } else if (method === 'PATCH') {
+        result = await patchApiData(endpoint, payload);
+      } else if (method === 'DELETE') {
+        result = await deleteApiData(endpoint);
+      }
+      setData(result);
+      return result;
+    } catch(err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  return {
+    execute,
+    loading,
+    data,
+    error
+  }
 }
