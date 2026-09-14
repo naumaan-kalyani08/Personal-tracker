@@ -201,3 +201,9 @@ export const ReusableTable = (props) => {
     />
   );
 };
+
+
+
+
+
+export default ReusableComponents
