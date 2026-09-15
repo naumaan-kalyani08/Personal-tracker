@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import {
   Input,
   Card,
@@ -12,25 +13,67 @@ import {
   Pagination,
   Table,
   message,
-  Dropdown
+  Dropdown,
 } from 'antd';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-export const ReusableInput = (props) => {
-  
+export const ReusableInput = ({
+  label,
+  labelFor,
+  name,
+  value,
+  onChange,
+  onBlur,
+  onKeyDown,
+  type = 'text',
+  placeholder = '',
+  size,
+  disabled = false,
+  readOnly = false,
+  required = false,
+  error = '',
+  maxLength,
+  prefix,
+  suffix,
+  addonBefore,
+  addonAfter,
+  autoComplete,
+  ...props
+}) => {
   return (
     <div className="input-wrapper mb-2">
-      <label className="mb-1.5 inline-block" htmlFor={props.labelFor}>{props.label}</label>
+      {label && (
+        <label className="mb-1.5 inline-block" htmlFor={labelFor || name}>
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+
       <Input
-        size={props.size}
-        type={props.type || 'text'}
-        placeholder={props.placeholder}
-        name={props.name}
-        value={props.value}
-        onChange={props.onChange}
+        id={labelFor || name}
+        size={size}
+        type={type}
+        placeholder={placeholder}
+        name={name}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        disabled={disabled}
+        readOnly={readOnly}
+        maxLength={maxLength}
+        prefix={prefix}
+        suffix={suffix}
+        addonBefore={addonBefore}
+        addonAfter={addonAfter}
+        autoComplete={autoComplete}
+        status={error ? 'error' : undefined}
+        {...props}
       />
+
+      {error && <div className="text-red-500 text-xs mt-1">{error}</div>}
     </div>
   );
 };
@@ -48,33 +91,92 @@ export const showSequentialMessage = (messages, interval = 800) => {
   });
 };
 
-export const ReusableCard = (props) => {
+export const ReusableCard = ({
+  title,
+  bordered = true,
+  extra,
+  loading = false,
+  hoverable = false,
+  children,
+  ...props
+}) => {
   return (
-    <Card title={props.title} bordered={props.bordered ?? true} {...props}>
-      {props.children}
+    <Card
+      title={title}
+      bordered={bordered}
+      extra={extra}
+      loading={loading}
+      hoverable={hoverable}
+      {...props}
+    >
+      {children}
     </Card>
   );
 };
 
-export const ReusableButton = (props) => {
+export const ReusableButton = ({
+  label,
+  children,
+  onClick,
+  type = 'primary',
+  loading = false,
+  disabled = false,
+  htmlType = 'button',
+  block = false,
+  icon,
+  danger = false,
+  size,
+  ghost = false,
+  ...props
+}) => {
   return (
-    <Button type={props.type || 'primary'} onClick={props.onClick} {...props}>
-      {props.label}
+    <Button
+      type={type}
+      onClick={onClick}
+      loading={loading}
+      disabled={disabled}
+      htmlType={htmlType}
+      block={block}
+      icon={icon}
+      danger={danger}
+      size={size}
+      ghost={ghost}
+      {...props}
+    >
+      {label || children}
     </Button>
   );
 };
 
-export const ReusableModal = (props) => {
+export const ReusableModal = ({
+  title,
+  open,
+  onOk,
+  onCancel,
+  footer,
+  confirmLoading = false,
+  centered = true,
+  destroyOnClose = true,
+  okText = 'OK',
+  cancelText = 'Cancel',
+  children,
+  ...props
+}) => {
   return (
     <Modal
-      title={props.title}
-      open={props.open}
-      onOk={props.onOk}
-      onCancel={props.onCancel}
-      footer={props.footer}
+      title={title}
+      open={open}
+      onOk={onOk}
+      onCancel={onCancel}
+      footer={footer}
+      confirmLoading={confirmLoading}
+      centered={centered}
+      destroyOnClose={destroyOnClose}
+      okText={okText}
+      cancelText={cancelText}
       {...props}
     >
-      {props.children}
+      {children}
     </Modal>
   );
 };
@@ -100,110 +202,161 @@ export const ReusableDropdown = ({
   };
 
   return (
-    <Dropdown
-      menu={menu}
-      placement={placement}
-      trigger={trigger}
-      {...props}
-    >
+    <Dropdown menu={menu} placement={placement} trigger={trigger} {...props}>
       {children}
     </Dropdown>
   );
 };
 
-export const ReusableCheckbox = (props) => {
+export const ReusableCheckbox = ({ checked, onChange, label, ...props }) => {
   return (
-    <Checkbox
-      checked={props.checked}
-      onChange={props.onChange}
-      {...props}
-    >
-      {props.label}
+    <Checkbox checked={checked} onChange={onChange} {...props}>
+      {label}
     </Checkbox>
   );
 };
 
-export const ReusableRadioButton = (props) => {
+export const ReusableRadioButton = ({ checked, onChange, value, label, ...props }) => {
   return (
-    <Radio
-      checked={props.checked}
-      onChange={props.onChange}
-      value={props.value}
-      {...props}
-    >
-      {props.label}
+    <Radio checked={checked} onChange={onChange} value={value} {...props}>
+      {label}
     </Radio>
   );
 };
 
-export const ReusableTextarea = (props) => {
+export const ReusableTextarea = ({
+  rows = 4,
+  placeholder,
+  value,
+  onChange,
+  error,
+  ...props
+}) => {
   return (
-    <TextArea
-      rows={props.rows || 4}
-      placeholder={props.placeholder}
-      value={props.value}
-      onChange={props.onChange}
-      {...props}
-    />
-  );
-};
-
-export const ReusableMessageAlert = (props) => {
-  return (
-    <Alert
-      message={props.message}
-      type={props.type || 'info'}
-      showIcon={props.showIcon ?? true}
-      closable={props.closable}
-      onClose={props.onClose}
-      {...props}
-    />
-  );
-};
-
-export const ReusableLoader = (props) => {
-  return (
-    <div className="loader-wrapper">
-      <Spin size={props.size || 'default'} tip={props.tip} />
+    <div>
+      <TextArea
+        rows={rows}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        status={error ? 'error' : undefined}
+        {...props}
+      />
+      {error && <div className="text-red-500 text-xs mt-1">{error}</div>}
     </div>
   );
 };
 
-export const ReusableTooltip = (props) => {
+export const ReusableMessageAlert = ({
+  message: alertMessage,
+  description,
+  type = 'info',
+  showIcon = true,
+  closable,
+  onClose,
+  action,
+  banner = false,
+  ...props
+}) => {
   return (
-    <Tooltip title={props.content} placement={props.placement || 'top'}>
-      {props.children}
+    <Alert
+      message={alertMessage}
+      description={description}
+      type={type}
+      showIcon={showIcon}
+      closable={closable}
+      onClose={onClose}
+      action={action}
+      banner={banner}
+      {...props}
+    />
+  );
+};
+
+export const ReusableLoader = ({ size = 'default', tip, ...props }) => {
+  return (
+    <div className="loader-wrapper" {...props}>
+      <Spin size={size} tip={tip} />
+    </div>
+  );
+};
+
+export const ReusableTooltip = ({ content, placement = 'top', children, ...props }) => {
+  return (
+    <Tooltip title={content} placement={placement} {...props}>
+      {children}
     </Tooltip>
   );
 };
 
-export const ReusablePagination = (props) => {
-  return (
-    <Pagination
-      current={props.current}
-      total={props.total}
-      pageSize={props.pageSize}
-      onChange={props.onChange}
-      {...props}
-    />
-  );
+export const ReusablePagination = ({ current, total, pageSize, onChange, ...props }) => {
+  return <Pagination current={current} total={total} pageSize={pageSize} onChange={onChange} {...props} />;
 };
 
-export const ReusableTable = (props) => {
+export const ReusableTable = ({
+  columns,
+  dataSource,
+  rowKey = 'key',
+  pagination = { pageSize: 10 },
+  loading,
+  rowSelection,
+  expandable,
+  scroll,
+  ...props
+}) => {
   return (
     <Table
-      columns={props.columns}
-      dataSource={props.dataSource}
-      rowKey={props.rowKey || 'key'}
-      pagination={props.pagination ?? { pageSize: 10 }}
-      loading={props.loading}
+      columns={columns}
+      dataSource={dataSource}
+      rowKey={rowKey}
+      pagination={pagination}
+      loading={loading}
+      rowSelection={rowSelection}
+      expandable={expandable}
+      scroll={scroll}
       {...props}
     />
   );
 };
 
+export const useAsyncRequest = (requestFn, options = {}) => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
+  const execute = useCallback(
+    async (...args) => {
+      setLoading(true);
+      setError(null);
 
+      try {
+        const result = await requestFn(...args);
+        setData(result);
+        if (options.onSuccess) {
+          options.onSuccess(result, ...args);
+        }
+        return result;
+      } catch (err) {
+        setError(err);
+        if (options.onError) {
+          options.onError(err, ...args);
+        }
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [requestFn, options]
+  );
 
+  const reset = useCallback(() => {
+    setData(null);
+    setError(null);
+  }, []);
 
-export default ReusableComponents
+  return { loading, data, error, execute, reset };
+};
+
+const ReusableComponents = {};
+
+export default ReusableComponents;
