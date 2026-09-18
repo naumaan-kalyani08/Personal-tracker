@@ -2,6 +2,7 @@ import React from 'react'
 import { ReusableButton, ReusableInput } from '../Components/UI/ReusableComponents'
 import { useApiForm } from '../Api/ReusableApiLogics'
 import { useNavigate } from 'react-router'
+import { setAuthData, isAuthenticated } from '../Utils/auth'
 
 const InitialFormData = {
   email: '',
@@ -10,10 +11,15 @@ const InitialFormData = {
 
 const LoginPage = () => {
   const navigate = useNavigate()
+
+  if (isAuthenticated()) {
+    navigate('/dashboard')
+  }
+
   const { formData, handleInputChange, handleSubmit, loading, responseMessage } = useApiForm('login', InitialFormData)
   const handleLoginSubmit = async (e) => {
     const result = await handleSubmit(e)
-    
+
     if (result && result.access_token) {
       const auth = {
         access_token: result.access_token,
@@ -25,7 +31,7 @@ const LoginPage = () => {
         },
       }
 
-      localStorage.setItem('auth', JSON.stringify(auth))
+      setAuthData(auth)
       navigate('/dashboard')
     }
   }
