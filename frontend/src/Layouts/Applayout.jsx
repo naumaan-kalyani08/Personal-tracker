@@ -1,12 +1,13 @@
 ﻿import React from 'react'
-import { Link, Outlet,useNavigate } from 'react-router'
-import { EllipsisVerticalIcon } from "@animateicons/react/lucide";
+import { Link, Outlet, useNavigate } from 'react-router'
+import { EllipsisVerticalIcon } from '@animateicons/react/lucide'
 import { ReusableDropdown } from '../Components/UI/ReusableComponents'
+import { clearAuthData, getAuthData } from '../Utils/auth'
 
 const Applayout = () => {
   const navigate = useNavigate()
-  const userInfo = JSON.parse(localStorage.getItem('auth'))
-  console.log('userInfo', userInfo)
+  const userInfo = getAuthData()
+
   const menuItems = [
     {
       key: 'account-settings',
@@ -18,7 +19,7 @@ const Applayout = () => {
       label: 'Logout',
       danger: true,
       onClick: () => {
-        localStorage.removeItem('auth')
+        clearAuthData()
         navigate('/login')
       }
     }
