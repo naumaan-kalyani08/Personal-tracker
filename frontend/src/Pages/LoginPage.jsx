@@ -1,7 +1,6 @@
-import React from 'react'
 import { ReusableButton, ReusableInput } from '../Components/UI/ReusableComponents'
 import { useApiForm } from '../Api/ReusableApiLogics'
-import { useNavigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { setAuthData, isAuthenticated } from '../Utils/auth'
 
 const InitialFormData = {
@@ -11,12 +10,12 @@ const InitialFormData = {
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const { formData, handleInputChange, handleSubmit, loading, responseMessage } = useApiForm('login', InitialFormData)
 
   if (isAuthenticated()) {
-    navigate('/dashboard')
+    return <Navigate to='/dashboard' replace />
   }
 
-  const { formData, handleInputChange, handleSubmit, loading, responseMessage } = useApiForm('login', InitialFormData)
   const handleLoginSubmit = async (e) => {
     const result = await handleSubmit(e)
 
