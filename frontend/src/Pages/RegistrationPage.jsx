@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { getApiData, useApiForm } from '../Api/ReusableApiLogics'
 import { ReusableButton, ReusableInput } from '../Components/UI/ReusableComponents'
-import { useNavigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router'
 import { isAuthenticated } from '../Utils/auth'
 
 const InitialFormData ={
@@ -14,15 +14,16 @@ const InitialFormData ={
 
 const RegistrationPage = () => {
   const navigate = useNavigate()
-
-  if (isAuthenticated()) {
-    navigate('/dashboard')
-  }
+  const {formData,handleInputChange,handleSubmit,loading,responseMessage} = useApiForm('register',InitialFormData)
 
   useEffect(() => {
     getApiData('test')
   }, [])
-  const {formData,handleInputChange,handleSubmit,loading,responseMessage} = useApiForm('register',InitialFormData)
+
+  if (isAuthenticated()) {
+    return <Navigate to='/dashboard' replace />
+  }
+
   const submitRegistration = async (e) => {
     const result = await handleSubmit(e)
 
