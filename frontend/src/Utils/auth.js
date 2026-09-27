@@ -10,6 +10,8 @@ export const getAuthData = () => {
   }
 };
 
+export const getAuthToken = () => getAuthData()?.access_token || null;
+
 export const setAuthData = (authData) => {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
 };
@@ -18,12 +20,6 @@ export const clearAuthData = () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
 
-export const isAuthenticated = () => {
-  const auth = getAuthData();
-  return Boolean(auth?.access_token);
-};
+export const isAuthenticated = () => Boolean(getAuthToken());
 
-export const getCurrentUser = () => {
-  const auth = getAuthData();
-  return auth?.user || null;
-};
+export const getCurrentUser = () => getAuthData()?.user || null;
