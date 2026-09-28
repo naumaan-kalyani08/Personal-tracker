@@ -1,203 +1,104 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { getApi, postApi, putApi, patchApi, deleteApi } from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api/";
+export const getApiData = async (endpoint = '', params = {}) => getApi(endpoint, params);
+export const postApiData = async (endpoint, data) => postApi(endpoint, data);
+export const putApiData = async (endpoint, data) => putApi(endpoint, data);
+export const patchApiData = async (endpoint, data) => patchApi(endpoint, data);
+export const deleteApiData = async (endpoint) => deleteApi(endpoint);
 
-const getApiHeaders = () => {
-  const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-
-  return {
-    Accept: 'application/json',
-    ...(auth.access_token
-      ? { Authorization: `Bearer ${auth.access_token}` }
-      : {}),
-  };
-};
-
-export const getApiData = async (endpoint='', params ={}) => {
- try {
-    // const param = params || ''; 
-    const queryString = new URLSearchParams(params).toString();
-    const url = queryString ? `${API_BASE_URL}${endpoint}?${queryString}`:`${API_BASE_URL}${endpoint}`;
-    // const url =`${API_BASE_URL}${endpoint}?${new URLSearchParams(param).toString()}`;       
-    console.log('Fetching data from:', url, 'with params:', params);
-    const response =await fetch(url, {
-      headers: getApiHeaders(),
-    })
-    if (!response.ok) {
-      throw new Error(`Http error: ${response.status}`);      
-    }
-    const data = await response.json()
-    return data
-    } catch (error) {
-    console.error("GET API Error:", error);
-        throw error;
- }  
-}
-export const postApiData = async (endpoint, data) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  try{
-    const response = await fetch(url,{
-    method: 'POST',
-    headers:{
-      "content-type": "application/json",
-      ...getApiHeaders(),
-    },
-    body: JSON.stringify(data)
-  });
-  const result = await response.json();
-  return result;
-  }
-  catch(error){
-    console.error("POST API Error:", error);
-    throw error;
-  }
-}
-export const deleteApiData = async (endpoint) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  try{
-    const response = await fetch(url,{
-    method: 'DELETE',
-    headers:{
-      "content-type": "application/json",
-      ...getApiHeaders(),
-    }
-  });
-  const result = await response.json();
-  return result;
-  }
-  catch(error){
-    console.error("DELETE API Error:", error);
-    throw error;
-  }
-}
-export const useApiForm =(endpoint,initialFormData={})=>{
-  const [formData, setFormData] = useState(()=>({...initialFormData}))
-  const [loading, setloading] = useState(false)
-  const [responseMessage, setResponseMessage] = useState('')
-  const handleInputChange =(e)=>{
-    const{name,value}=e.target
-    setFormData(prev=>({
-      ...prev,
-      [name]:value
-    }))
-  }
-  const resetFormData =()=>{
-    setFormData({...initialFormData})
-  }
-  const handleSubmit = async (e)=>{
-    console.log('Submitting form data:', formData);
-    if(e?.preventDefault) e.preventDefault()
-      setloading(true)
-      setResponseMessage('')
-      try{
-        const result = await postApiData(endpoint,formData)
-
-        if(result.status){
-          setResponseMessage(result.message ||'Submitted successfully')
-          resetFormData()
-        } else{
-          setResponseMessage(result.message ||'Failed to submit')
-        }
-        return result
-      }
-      catch(error){
-        setResponseMessage(error.message ||"Something went wrong")
-        throw error
-      }
-      finally {
-        setloading(false)
-      }
-  }
-  return{
-    formData,
-    handleInputChange,
-    handleSubmit,
-    loading,
-    responseMessage,
-    resetFormData
-  }
-} 
-
-export const putApiData = async (endpoint, data) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  try{
-    const response = await fetch(url,{
-    method: 'PUT',
-    headers:{
-      "content-type": "application/json",
-      ...getApiHeaders(),
-    },
-    body: JSON.stringify(data)
-  });
-  const result = await response.json();
-  return result;
-  }
-  catch(error){
-    console.error("PUT API Error:", error);
-    throw error;
-  }
-}
-
-export const patchApiData = async (endpoint, data) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  try{
-    const response = await fetch(url,{
-    method: 'PATCH',
-    headers:{
-      "content-type": "application/json",
-      ...getApiHeaders(),
-    },
-    body: JSON.stringify(data)
-  });
-  const result = await response.json();
-  return result;
-  }
-  catch(error){
-    console.error("PATCH API Error:", error);
-    throw error;
-  }
-}
-
-export const useDeleteApiData = (endpoint) => {
+export const useApiForm = (endpoint, initialFormData = {}) => {
+  const [formData, setFormData] = useState(() => ({ ...initialFormData }));
   const [loading, setLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
-  
-  const handleDelete = async () => {
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const resetFormData = () => {
+    setFormData({ ...initialFormData });
+  };
+
+  const handleSubmit = async (e) => {
+    if (e?.preventDefault) e.preventDefault();
+
     setLoading(true);
     setResponseMessage('');
+
     try {
-      const result = await deleteApiData(endpoint);
-      if(result.status){
-        setResponseMessage(result.message || 'Deleted successfully');
+      const result = await postApiData(endpoint, formData);
+
+      if (result?.status) {
+        setResponseMessage(result.message || 'Submitted successfully');
+        resetFormData();
       } else {
-        setResponseMessage(result.message || 'Failed to delete');
+        setResponseMessage(result?.message || 'Failed to submit');
       }
+
       return result;
-    } catch(error) {
+    } catch (error) {
       setResponseMessage(error.message || 'Something went wrong');
       throw error;
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
+
+  return {
+    formData,
+    handleInputChange,
+    handleSubmit,
+    loading,
+    responseMessage,
+    resetFormData,
+  };
+};
+
+export const useDeleteApiData = (endpoint) => {
+  const [loading, setLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
+
+  const handleDelete = async () => {
+    setLoading(true);
+    setResponseMessage('');
+
+    try {
+      const result = await deleteApiData(endpoint);
+      if (result?.status) {
+        setResponseMessage(result.message || 'Deleted successfully');
+      } else {
+        setResponseMessage(result?.message || 'Failed to delete');
+      }
+      return result;
+    } catch (error) {
+      setResponseMessage(error.message || 'Something went wrong');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     handleDelete,
     loading,
-    responseMessage
-  }
-}
+    responseMessage,
+  };
+};
 
 export const useApiCall = (method = 'GET') => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  
+
   const execute = async (endpoint, payload = null, params = null) => {
     setLoading(true);
     setError(null);
+
     try {
       let result;
+
       if (method === 'GET') {
         result = await getApiData(endpoint, params);
       } else if (method === 'POST') {
@@ -209,20 +110,21 @@ export const useApiCall = (method = 'GET') => {
       } else if (method === 'DELETE') {
         result = await deleteApiData(endpoint);
       }
+
       setData(result);
       return result;
-    } catch(err) {
+    } catch (err) {
       setError(err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
+
   return {
     execute,
     loading,
     data,
-    error
-  }
-}
+    error,
+  };
+};
