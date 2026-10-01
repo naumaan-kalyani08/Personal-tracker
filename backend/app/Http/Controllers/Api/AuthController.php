@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -87,16 +87,12 @@ class AuthController extends Controller
     }
     public function updateProfile(request $request){
         $user = $request->user();
-        Log::info(['user 90' => $user]);
-        return [
-            'status' => true,
-            'message' => 'User details retrieved successfully',
-            'data' => $user
-        ];
         $validator = Validator::make($request->all(), [
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'number' => 'string|max:12',
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|required|string|max:255',
+            'email' => ['sometimes', 'required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'number' => 'nullable|string|max:12',
+            'dob' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -106,7 +102,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user->update($request->only(['first_name', 'last_name', 'number']));
+        $user->update($validator->validated());
 
         return response()->json([
             'status' => true,
