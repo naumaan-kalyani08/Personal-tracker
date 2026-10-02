@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { getApi, postApi, putApi, patchApi, deleteApi } from './apiClient';
 
-export const getApiData = async (endpoint = '', params = {}) => getApi(endpoint, params);
-export const postApiData = async (endpoint, data) => postApi(endpoint, data);
-export const putApiData = async (endpoint, data) => putApi(endpoint, data);
-export const patchApiData = async (endpoint, data) => patchApi(endpoint, data);
-export const deleteApiData = async (endpoint) => deleteApi(endpoint);
+export const getApiData = async (endpoint = '', params = {}, options = {}) => getApi(endpoint, params, options);
+export const postApiData = async (endpoint, data, options = {}) => postApi(endpoint, data, options);
+export const putApiData = async (endpoint, data, options = {}) => putApi(endpoint, data, options);
+export const patchApiData = async (endpoint, data, options = {}) => patchApi(endpoint, data, options);
+export const deleteApiData = async (endpoint, options = {}) => deleteApi(endpoint, options);
 
 export const useApiForm = (endpoint, initialFormData = {}) => {
   const [formData, setFormData] = useState(() => ({ ...initialFormData }));
