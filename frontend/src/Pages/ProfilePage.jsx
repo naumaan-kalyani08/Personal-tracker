@@ -1,5 +1,5 @@
 ﻿
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Pencil,
   Mail,
@@ -9,7 +9,8 @@ import {
   Save,
   X,
 } from "@animateicons/react/lucide";
-import { getApiData } from '../Api/ReusableApiLogics'
+import { getApiData, putApiData } from '../Api/ReusableApiLogics'
+import { getAuthData, setAuthData } from '../Utils/auth'
 
 const emptyProfile = {
   first_name: '',
@@ -24,6 +25,8 @@ const ProfilePage = () => {
   const [profileInfo, setProfileInfo] = useState(emptyProfile);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
 
   const [formData, setFormData] = useState(emptyProfile);
 
@@ -46,32 +49,52 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setSaveMessage('');
 
-    // Later connect this to Laravel:
-    // PUT /api/profile
+    try {
+      const result = await putApiData('update-profile', formData);
+      const updatedUser = result.data || formData;
+      setProfileInfo({ ...emptyProfile, ...updatedUser, dob: updatedUser.dob || '' });
+      setFormData({ ...emptyProfile, ...updatedUser, dob: updatedUser.dob || '' });
 
-    setProfileInfo(formData);
-    setIsEditing(false);
+      const auth = getAuthData();
+      setAuthData({ ...auth, user: updatedUser });
+      setSaveMessage(result.message || 'Profile updated successfully');
+      setIsEditing(false);
+    } catch (requestError) {
+      setSaveMessage(requestError.message || 'Unable to save profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchProfile = async () => {
       try {
-        const result = await getApiData('user');
-        const user = result.user || emptyProfile;
+        const result = await getApiData('user', {}, { signal: controller.signal });
+        const user = { ...emptyProfile, ...(result.user || {}), dob: result.user?.dob || '' };
 
         setProfileInfo(user);
         setFormData(user);
       } catch (requestError) {
-        setError(requestError.message || 'Unable to load profile');
+        if (requestError.name !== 'AbortError') {
+          setError(requestError.message || 'Unable to load profile');
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProfile();
+
+    return () => controller.abort();
   }, []);
 
   if (loading) {
@@ -150,6 +173,12 @@ const ProfilePage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
+
+            {saveMessage && (
+              <p className={`px-6 pt-4 text-sm sm:px-8 ${isEditing && saving ? 'text-gray-500' : 'text-red-600'}`} role="status">
+                {saveMessage}
+              </p>
+            )}
 
             <div className="px-6 py-7 sm:px-8">
 
@@ -307,10 +336,11 @@ const ProfilePage = () => {
 
                 <button
                   type="submit"
+                  disabled={saving}
                   className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
                 >
                   <Save size={16} />
-                  Save Changes
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </button>
 
               </div>
