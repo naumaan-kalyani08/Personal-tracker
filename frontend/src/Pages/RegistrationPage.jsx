@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { getApiData, useApiForm } from '../Api/ReusableApiLogics'
+import { useApiForm } from '../Api/ReusableApiLogics'
 import { ReusableButton, ReusableInput } from '../Components/UI/ReusableComponents'
 import { Navigate, useNavigate } from 'react-router'
 import { isAuthenticated } from '../Utils/auth'
@@ -15,10 +14,6 @@ const InitialFormData ={
 const RegistrationPage = () => {
   const navigate = useNavigate()
   const {formData,handleInputChange,handleSubmit,loading,responseMessage} = useApiForm('register',InitialFormData)
-
-  useEffect(() => {
-    getApiData('test')
-  }, [])
 
   if (isAuthenticated()) {
     return <Navigate to='/dashboard' replace />
