@@ -26,6 +26,7 @@ export const apiClient = async (endpoint = '', options = {}) => {
     body,
     params = {},
     headers = {},
+    signal,
   } = options;
 
   const token = getAuthToken();
@@ -42,6 +43,7 @@ export const apiClient = async (endpoint = '', options = {}) => {
     method,
     headers: requestHeaders,
     ...(body !== undefined ? { body: isFormData ? body : JSON.stringify(body) } : {}),
+    ...(signal ? { signal } : {}),
   };
 
   try {
