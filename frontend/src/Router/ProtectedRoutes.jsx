@@ -1,9 +1,15 @@
-﻿import React from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router'
-import { isAuthenticated } from '../Utils/auth'
+import { isAuthenticated, subscribeToAuthChanges } from '../Utils/auth'
 
 const ProtectedRoutes = () => {
-  if (!isAuthenticated()) {
+  const [authenticated, setAuthenticated] = useState(isAuthenticated);
+
+  useEffect(() => subscribeToAuthChanges(() => {
+    setAuthenticated(isAuthenticated());
+  }), []);
+
+  if (!authenticated) {
     return <Navigate to='/login' replace />
   }
 
