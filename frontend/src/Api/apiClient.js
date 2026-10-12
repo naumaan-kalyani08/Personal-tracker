@@ -1,4 +1,4 @@
-import { clearAuthData, getAuthToken } from '../Utils/auth';
+import { clearAuthData, getAuthToken, isAuthenticated } from '../Utils/auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/';
 
@@ -28,6 +28,13 @@ export const apiClient = async (endpoint = '', options = {}) => {
     headers = {},
     signal,
   } = options;
+
+  if (!isAuthenticated()) {
+    clearAuthData();
+    const error = new Error('Your session has expired. Please log in again.');
+    error.status = 401;
+    throw error;
+  }
 
   const token = getAuthToken();
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
