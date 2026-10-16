@@ -11,9 +11,10 @@ const buildUrl = (endpoint = '', params = {}) => {
 
 const getErrorMessage = (response, payload) => {
   if (payload?.message) return payload.message;
-  if (payload?.error) return payload.error;
-  if (payload?.errors) {
-    const firstError = Object.values(payload.errors)?.[0];
+  const validationErrors = payload?.errors || payload?.error;
+  if (typeof validationErrors === 'string') return validationErrors;
+  if (validationErrors && typeof validationErrors === 'object') {
+    const firstError = Object.values(validationErrors)?.[0];
     return Array.isArray(firstError) ? firstError[0] : firstError || 'Request failed';
   }
 
@@ -29,11 +30,9 @@ export const apiClient = async (endpoint = '', options = {}) => {
     signal,
   } = options;
 
-  if (!isAuthenticated()) {
+  const storedToken = getAuthToken();
+  if (storedToken && !isAuthenticated()) {
     clearAuthData();
-    const error = new Error('Your session has expired. Please log in again.');
-    error.status = 401;
-    throw error;
   }
 
   const token = getAuthToken();
