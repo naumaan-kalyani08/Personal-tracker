@@ -20,6 +20,24 @@ const emptyProfile = {
   dob: '',
 }
 
+const validateProfile = (values) => {
+  const errors = {};
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!values.first_name.trim()) errors.first_name = 'First name is required.';
+  if (!values.last_name.trim()) errors.last_name = 'Last name is required.';
+  if (!values.email.trim()) {
+    errors.email = 'Email is required.';
+  } else if (!emailPattern.test(values.email)) {
+    errors.email = 'Enter a valid email address.';
+  }
+  if (values.number && values.number.length > 12) {
+    errors.number = 'Phone number must be 12 characters or fewer.';
+  }
+
+  return errors;
+};
+
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileInfo, setProfileInfo] = useState(emptyProfile);
@@ -27,6 +45,8 @@ const ProfilePage = () => {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [saveMessageType, setSaveMessageType] = useState('success');
+  const [validationErrors, setValidationErrors] = useState({});
 
   const [formData, setFormData] = useState(emptyProfile);
 
@@ -37,6 +57,8 @@ const ProfilePage = () => {
       ...prev,
       [name]: value,
     }));
+    setValidationErrors((prev) => ({ ...prev, [name]: '' }));
+    setSaveMessage('');
   };
 
   const handleEdit = () => {
@@ -46,11 +68,21 @@ const ProfilePage = () => {
 
   const handleCancel = () => {
     setFormData(profileInfo);
+    setValidationErrors({});
+    setSaveMessage('');
     setIsEditing(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errors = validateProfile(formData);
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setSaveMessageType('error');
+      setSaveMessage('Please correct the highlighted fields.');
+      return;
+    }
+
     setSaving(true);
     setSaveMessage('');
 
@@ -62,9 +94,20 @@ const ProfilePage = () => {
 
       const auth = getAuthData();
       setAuthData({ ...auth, user: updatedUser });
+      setSaveMessageType('success');
       setSaveMessage(result.message || 'Profile updated successfully');
       setIsEditing(false);
     } catch (requestError) {
+      const serverErrors = requestError.payload?.errors || requestError.payload?.error;
+      if (serverErrors && typeof serverErrors === 'object') {
+        setValidationErrors(Object.fromEntries(
+          Object.entries(serverErrors).map(([field, messages]) => [
+            field,
+            Array.isArray(messages) ? messages[0] : messages,
+          ])
+        ));
+      }
+      setSaveMessageType('error');
       setSaveMessage(requestError.message || 'Unable to save profile');
     } finally {
       setSaving(false);
@@ -175,7 +218,7 @@ const ProfilePage = () => {
           <form onSubmit={handleSubmit}>
 
             {saveMessage && (
-              <p className={`px-6 pt-4 text-sm sm:px-8 ${isEditing && saving ? 'text-gray-500' : 'text-red-600'}`} role="status">
+              <p className={`px-6 pt-4 text-sm sm:px-8 ${saveMessageType === 'error' ? 'text-red-600' : 'text-green-700'}`} role="status">
                 {saveMessage}
               </p>
             )}
@@ -204,8 +247,11 @@ const ProfilePage = () => {
                     <input
                       type="text"
                       name="first_name"
+                      required
                       value={formData.first_name}
                       onChange={handleChange}
+                      aria-invalid={Boolean(validationErrors.first_name)}
+                      aria-describedby={validationErrors.first_name ? 'first-name-error' : undefined}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                     />
                   ) : (
@@ -217,6 +263,7 @@ const ProfilePage = () => {
                       </span>
                     </div>
                   )}
+                  {isEditing && validationErrors.first_name && <p id="first-name-error" className="mt-1 text-sm text-red-600">{validationErrors.first_name}</p>}
                 </div>
 
                 {/* Last Name */}
@@ -229,8 +276,11 @@ const ProfilePage = () => {
                     <input
                       type="text"
                       name="last_name"
+                      required
                       value={formData.last_name}
                       onChange={handleChange}
+                      aria-invalid={Boolean(validationErrors.last_name)}
+                      aria-describedby={validationErrors.last_name ? 'last-name-error' : undefined}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                     />
                   ) : (
@@ -242,6 +292,7 @@ const ProfilePage = () => {
                       </span>
                     </div>
                   )}
+                  {isEditing && validationErrors.last_name && <p id="last-name-error" className="mt-1 text-sm text-red-600">{validationErrors.last_name}</p>}
                 </div>
 
                 {/* Email */}
@@ -254,8 +305,11 @@ const ProfilePage = () => {
                     <input
                       type="email"
                       name="email"
+                      required
                       value={formData.email}
                       onChange={handleChange}
+                      aria-invalid={Boolean(validationErrors.email)}
+                      aria-describedby={validationErrors.email ? 'email-error' : undefined}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                     />
                   ) : (
@@ -267,6 +321,7 @@ const ProfilePage = () => {
                       </span>
                     </div>
                   )}
+                  {isEditing && validationErrors.email && <p id="email-error" className="mt-1 text-sm text-red-600">{validationErrors.email}</p>}
                 </div>
 
                 {/* Phone */}
@@ -281,6 +336,9 @@ const ProfilePage = () => {
                       name="number"
                       value={formData.number}
                       onChange={handleChange}
+                      maxLength={12}
+                      aria-invalid={Boolean(validationErrors.number)}
+                      aria-describedby={validationErrors.number ? 'number-error' : undefined}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
                     />
                   ) : (
@@ -292,6 +350,7 @@ const ProfilePage = () => {
                       </span>
                     </div>
                   )}
+                  {isEditing && validationErrors.number && <p id="number-error" className="mt-1 text-sm text-red-600">{validationErrors.number}</p>}
                 </div>
 
                 {/* Date of Birth */}
