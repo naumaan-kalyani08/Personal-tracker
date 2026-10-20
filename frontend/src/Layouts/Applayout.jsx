@@ -1,4 +1,3 @@
-﻿import React from 'react'
 import { Link, Outlet, useNavigate } from 'react-router'
 import { EllipsisVerticalIcon } from '@animateicons/react/lucide'
 import { ReusableDropdown } from '../Components/UI/ReusableComponents'
@@ -68,6 +67,7 @@ const Applayout = () => {
             <Link to='/dashboard'>Dashboard</Link>
             <Link to='/profile'>Profile</Link>
             <Link to='/contact'>Contact</Link>
+            <Link to='/account-settings'>Account settings</Link>
           </nav>
         </aside>
 
