@@ -66,6 +66,7 @@ const Applayout = () => {
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Link to='/dashboard'>Dashboard</Link>
             <Link to='/profile'>Profile</Link>
+            <Link to='/qr-generate'>QR code generator</Link>
             <Link to='/contact'>Contact</Link>
             <Link to='/account-settings'>Account settings</Link>
           </nav>
