@@ -1,5 +1,4 @@
-﻿import React from 'react'
-import { Routes, Route } from 'react-router'
+﻿import { Routes, Route } from 'react-router'
 import PublicLayout from '../Layouts/PublicLayout'
 import AppLayout from '../Layouts/Applayout'
 import ProtectedRoutes from './ProtectedRoutes'
@@ -10,6 +9,7 @@ import PageNotFound from '../Pages/PageNotFound'
 import DashboardPage from '../Pages/DashboardPage'
 import ProfilePage from '../Pages/ProfilePage'
 import AccountSettings from '../Pages/AccountSettings'
+import QrCodePage from '../Pages/QrCodePage'
 
 const AppRouter = () => {
   return (
@@ -25,6 +25,7 @@ const AppRouter = () => {
         <Route path='/' element={<Index />} />
         <Route path='/about' element={<div>About Page</div>} />
         <Route path='/contact' element={<div>Contact Page</div>} />
+        <Route path='/qr-generate' element={<QrCodePage />} />
       </Route>
 
       {/* Protected pages with header/footer/sidebar */}

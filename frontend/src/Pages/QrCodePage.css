@@ -1,0 +1,31 @@
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .qr-printable,
+  .qr-printable * {
+    visibility: visible !important;
+  }
+
+  .qr-controls,
+  .qr-print-label {
+    display: none !important;
+  }
+
+  .qr-printable {
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: white !important;
+  }
+
+  .qr-printable canvas {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto !important;
+    height: auto !important;
+  }
+}
